@@ -21,7 +21,6 @@ public class BufferSend implements Runnable
            byte[] serialized = this.buffer.serialize();
 
             this.buffer.getTalker().sendFullPacket(serialized);
-//            System.out.println("D I R T Y  A F");
         }
     }
 }
