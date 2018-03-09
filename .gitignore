@@ -1,0 +1,15 @@
+/target/
+/.classpath
+/.project
+/.settings/
+/freeroam-map.jsonp
+study/
+.idea/
+.gradle/
+*.iml
+.oldgit
+recorded/
+out/
+build/
+*.png
+.DS_Store

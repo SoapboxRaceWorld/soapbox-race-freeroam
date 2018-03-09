@@ -1,0 +1,127 @@
+These were written by me who-knows-when, probably back in the summer of 2017.
+This was where I was studying the EA server's packet style. 
+Nothing really interesting, unless you find packet analysis to be interesting. In that case, read on!
+
+all packets:
+    16 byte header; example: fe b3 00 01 07 02 50 5f 19 89 ff ff ff ff 59 a4 46 b6
+    variable-length data
+    4-byte crc; example: d3 5d 37 65
+
+client connection phase
+    c->s HELLO (00:0x:06)
+    s->c HELLO-OK
+    c->s [send player info]
+        example: 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00  ..............E.
+                 0010   00 b4 93 72 40 00 40 11 a8 c4 7f 00 00 01 7f 00  ...r@.@.........
+                 0020   00 01 d4 f0 27 0f 00 a0 fe b3 00 01 07 02 50 5f  ....'.........P_
+                 0030   19 89 ff ff ff ff 59 a4 46 b6 00 22 00 00 63 68  ......Y.F.."..ch
+                 0040   61 6e 6e 65 6c 2e 45 4e 5f 5f 31 00 00 01 67 c3  annel.EN__1...g.
+                 0050   7b d0 fc 33 00 63 ef 76 00 00 00 00 00 e0 01 41  {..3.c.v.......A
+                 0060   00 4e 49 4c 5a 41 4f 00 00 00 00 00 00 00 00 00  .NILZAO.........
+                 0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+                 0080   00 c7 8a a9 00 00 00 00 00 64 00 00 00 00 00 00  .........d......
+                 0090   00 b0 79 e6 cf ee 1e 9c fb 1b 9f c2 dc 00 00 00  ..y.............
+                 00a0   00 12 1a 69 e7 98 0a cb e1 3e 1f 53 e9 c4 25 89  ...i.....>.S..%.
+                 00b0   c4 20 bf 1b e3 02 96 96 96 9a 28 00 3f ff d3 5d  . ........(.?..]
+                 00c0   37 65                                            7e
+    s->c [send first player]
+        example: 0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00  ..............E.
+                 0010   00 cb 93 74 40 00 40 11 a8 ab 7f 00 00 01 7f 00  ...t@.@.........
+                 0020   00 01 27 0f d4 f0 00 b7 fe ca 00 01 02 6a 58 56  ..'..........jXV
+                 0030   82 00 01 7f ff 00 00 00 22 00 00 63 68 61 6e 6e  ........"..chann
+                 0040   65 6c 2e 50 4c 5f 5f 32 00 01 80 22 47 77 20 80  el.PL__2..."Gw .
+                 0050   e6 1c 80 22 47 77 01 22 47 77 20 01 41 00 43 4f  ..."Gw."Gw .A.CO
+                 0060   46 46 45 4b 36 39 39 00 00 00 00 00 00 00 00 00  FFEK699.........
+                 0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 72 22  ..............r"
+                 0080   47 02 00 00 00 00 d1 11 55 01 00 00 00 00 b0 79  G.......U......y
+                 0090   e6 cf ee 1e 9c fb 1b 9f c2 dc 00 00 00 00 12 1a  ................
+                 00a0   69 9d 98 0a d2 3d 3d 9f 5d 79 c4 25 89 c4 20 7f  i....==.]y.%.. .
+                 00b0   eb f2 9d 96 96 96 9a 28 00 3f ff ff ff ff ff ff  .......(.?......
+                 00c0   ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff  ................
+                 00d0   ff ff ff ff ff 01 01 01 01                       .........
+        notes:
+            - possibly sorted by player time relative to states
+            - one full player packet, nothing else but the header + crc
+
+
+information exchange:
+    - client sends player info after hello-OK (see above)
+    - server sends player + car state packets grouped together
+        examples:
+        0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00  ..............E.
+        0010   00 4d 93 7b 40 00 40 11 a9 22 7f 00 00 01 7f 00  .M.{@.@.."......
+        0020   00 01 d4 f0 27 0f 00 39 fe 4c 00 02 07 02 50 ae  ....'..9.L....P.
+        0030   19 d9 00 01 7f ff 59 a4 46 b6 12 1a 6a 2a 98 0a  ......Y.F...j*..
+        0040   cb e1 3e 1f 53 e9 c4 25 89 c4 20 bf 1b e3 02 96  ..>.S..%.. .....
+        0050   96 96 9a 28 00 3f ff da c6 9d 3b                 ...(.?....;
+        single car ^
+        
+        0000   00 00 00 00 00 00 00 00 00 00 00 00 08 00 45 00  ..............E.
+        0010   02 70 93 7f 40 00 40 11 a6 fb 7f 00 00 01 7f 00  .p..@.@.........
+        0020   00 01 27 0f d4 f0 02 5c 00 70 00 02 02 6a b0 56  ..'....\.p...j.V
+        0030   7a 00 02 bf ff 01 00 00 22 00 00 63 68 61 6e 6e  z......."..chann
+        0040   65 6c 2e 45 53 5f 5f 32 00 01 40 77 96 77 20 90  el.ES__2..@w.w .
+        0050   5d 1a 40 77 96 77 01 77 96 77 20 01 41 00 41 42  ].@w.w.w.w .A.AB
+        0060   44 49 53 50 45 45 44 45 52 37 00 00 00 00 00 00  DISPEEDER7......
+        0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 05 0d  ................
+        0080   4a 02 00 00 00 00 77 77 56 01 00 00 00 00 b0 79  J.....wwV......y
+        0090   e6 cf ee 1e 9c fb bd 0b d7 a2 00 00 00 00 12 1a  ................
+        00a0   69 f1 98 0a d2 3d 3d 9f 5d 79 c4 25 89 c4 20 7f  i....==.]y.%.. .
+        00b0   eb f2 9d 96 96 96 9a fc 00 1f ff 00 00 22 00 00  ............."..
+        00c0   63 68 61 6e 6e 65 6c 2e 45 4e 5f 5f 31 00 01 80  channel.EN__1...
+        00d0   22 3a 77 20 10 e0 24 80 22 3a 77 01 22 3a 77 20  ":w ..$.":w.":w 
+        00e0   01 41 00 4b 4c 4b 54 4a 4a 54 00 00 00 00 00 00  .A.KLKTJJT......
+        00f0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+        0100   00 00 00 4a a7 e5 00 00 00 00 00 2c 4b 53 01 00  ...J.......,KS..
+        0110   00 00 00 b0 79 e6 cf ee 1e 9c fb 1b 9f c2 dc 00  ....y...........
+        0120   00 00 00 12 1a 6a 80 98 0a c6 9d 40 df 64 e9 c4  .....j.....@.d..
+        0130   25 89 c4 1f 4d 47 ef a1 2d 2d 2d 34 50 00 7f ff  %...MG..---4P...
+        0140   00 00 22 00 00 63 68 61 6e 6e 65 6c 2e 45 4e 5f  .."..channel.EN_
+        0150   5f 32 00 01 d0 22 0d 77 20 00 c3 22 d0 22 0d 77  _2...".w ..".".w
+        0160   01 23 0d 77 20 01 41 00 4b 41 54 52 49 4e 41 52  .#.w .A.KATRINAR
+        0170   41 43 45 52 00 00 00 00 00 00 00 00 00 00 00 00  ACER............
+        0180   00 00 00 00 00 00 00 00 25 1d 29 02 00 00 00 00  ........%.).....
+        0190   83 5f 56 01 00 00 00 00 b0 79 e6 cf ee 1e 9c fb  ._V......y......
+        01a0   d0 f8 16 a4 00 00 00 00 12 1a 69 e1 98 0a f3 95  ..........i.....
+        01b0   42 1f 81 08 a3 a6 db 59 1e af 93 f7 eb 96 9a 96  B......Y........
+        01c0   f5 e8 00 1f ff 00 00 22 00 00 63 68 61 6e 6e 65  ......."..channe
+        01d0   6c 2e 45 4e 5f 5f 31 00 00 84 eb 76 00 e0 10 90  l.EN__1....v....
+        01e0   7c 20 e0 1f 0f 00 00 00 00 a8 01 41 00 54 4f 4d  | .........A.TOM
+        01f0   31 34 4a 41 4e 31 30 00 00 00 00 00 00 00 00 00  14JAN10.........
+        0200   00 00 00 00 00 00 00 00 00 00 00 00 00 5c d8 9f  .............\..
+        0210   01 00 00 00 00 ba a1 1f 01 00 00 00 00 b0 79 e6  ..............y.
+        0220   cf ee 1e 9c fb b3 67 db e4 00 00 00 00 12 1a 69  ......g........i
+        0230   e3 98 0a d2 3d 3d 5f 5d 79 c4 25 89 c4 20 7f eb  ....==_]y.%.. ..
+        0240   f2 9d 96 96 96 9a fc 00 1f ff ff ff ff ff ff ff  ................
+        0250   ff ff ff ff ff ff ff ff ff ff ff ff 00 12 1a 6a  ...............j
+        0260   54 98 0a d2 3d 3d 9f 5d 79 c4 25 89 c4 20 7f eb  T...==.]y.%.. ..
+        0270   f2 9d 96 96 96 9a 28 00 3f ff 01 01 01 01        ......(.?.....
+        
+        ^ 4 full players, 1 car-state
+        
+        
+------------------------------------------------------------------------------------
+c->s hello
+s->c welcome
+c->s send self info
+s->c send first player
+    repeated ff:ff at end of player info list; most likely 2:1 in terms of player count
+s->c stream players; 00:playerinfo:ff and so on...
+    repeated ff:ff at end of player info list; most likely 2:1 in terms of player count
+...continued player stream... still repeated ff:ff
+turns into _mostly_ 12:1a (carstate) with the occasional player info
+[continued repeated ff:ff for a few times]
+...
+eventually turns into just carstate
+
+-------------------------------------------------------------------------------
+packet wrapping
+00:packet:ff - Player packet, active player
+ff:ff - Player packet, removed/nonexistent player
+00:packet:ff - Statepos, active
+ff:ff - Statepos, removed/nonexistent player
+
+
+------------------------------------------------------------------------------
+repeated ff:ff; comes after list of player info; only occurs when a packet contains *any* player packets
+amount of ff:ff decreases as more players are added; probably "draining" where the server determines who to send info for
