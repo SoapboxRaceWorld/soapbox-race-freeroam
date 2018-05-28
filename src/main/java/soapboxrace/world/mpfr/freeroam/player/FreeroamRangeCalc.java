@@ -4,6 +4,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import soapboxrace.world.mpfr.freeroam.FreeroamTalker;
 import soapboxrace.world.mpfr.server.udp.FreeroamAllTalkers;
+import soapboxrace.world.mpfr.utils.MainLogger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,12 +41,16 @@ public class FreeroamRangeCalc
 
                     return ImmutablePair.of(talker, Math.sqrt(Math.pow(them[0] - self[0], 2) + Math.pow(them[1] - self[1], 2)));
                 })
-                .filter(pair -> pair.getRight() <= 100) // change?
+                .filter(pair -> pair.getRight() <= 450) // change?
                 .sorted(Comparator.comparingDouble(Pair::getValue))
                 .limit(FreeroamVisibleTalkers.VISIBLE_PLAYERS_LIMIT)
                 .collect(Collectors.toList());
+        final List<FreeroamTalker> closestList = distancePairs.stream()
+                .map(Pair::getKey)
+                .collect(Collectors.toList());
+        MainLogger.logger.debug("closest for [{}] = {}", freeroamTalker, closestList);
         return freeroamTalker.getVisibleTalkers().setVisibleTalkers(
-                distancePairs.stream().map(Pair::getKey).collect(Collectors.toList())
+                closestList
         );
 
 //        List<FreeroamTalker> closestList = FreeroamAllTalkers.getFreeroamTalkers()
