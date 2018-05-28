@@ -41,7 +41,7 @@ public class FreeroamRangeCalc
 
                     return ImmutablePair.of(talker, Math.sqrt(Math.pow(them[0] - self[0], 2) + Math.pow(them[1] - self[1], 2)));
                 })
-                .filter(pair -> pair.getRight() <= 450) // change?
+                .filter(pair -> pair.getRight() <= 2000) // change?
                 .sorted(Comparator.comparingDouble(Pair::getValue))
                 .limit(FreeroamVisibleTalkers.VISIBLE_PLAYERS_LIMIT)
                 .collect(Collectors.toList());
