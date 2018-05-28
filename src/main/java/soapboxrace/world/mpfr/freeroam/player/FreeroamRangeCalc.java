@@ -23,6 +23,8 @@ public class FreeroamRangeCalc
         List<FreeroamTalker> talkers = FreeroamAllTalkers.getFreeroamTalkers()
                 .entrySet()
                 .stream()
+                .filter(t -> !t.getValue().equals(freeroamTalker))
+                .filter(t -> t.getValue().isReady())
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
         List<Pair<FreeroamTalker, Double>> distancePairs = talkers.stream()
@@ -35,7 +37,7 @@ public class FreeroamRangeCalc
                             talker.getXPos(),
                             talker.getYPos()
                     };
-                    
+
                     return ImmutablePair.of(talker, Math.sqrt(Math.pow(them[0] - self[0], 2) + Math.pow(them[1] - self[1], 2)));
                 })
                 .filter(pair -> pair.getRight() <= 100) // change?
@@ -45,7 +47,7 @@ public class FreeroamRangeCalc
         return freeroamTalker.getVisibleTalkers().setVisibleTalkers(
                 distancePairs.stream().map(Pair::getKey).collect(Collectors.toList())
         );
-        
+
 //        List<FreeroamTalker> closestList = FreeroamAllTalkers.getFreeroamTalkers()
 //                .entrySet()
 //                .stream()
