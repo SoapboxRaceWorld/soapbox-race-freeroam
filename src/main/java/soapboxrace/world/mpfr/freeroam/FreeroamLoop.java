@@ -17,7 +17,10 @@ public class FreeroamLoop implements Runnable
     {
         for (FreeroamTalker talker : FreeroamAllTalkers.getFreeroamTalkers().values())
         {
-            talker.getPlayerUpdates().run();
+            if (talker.isReady())
+            {
+                talker.getPlayerUpdates().run();
+            }
         }
     }
 }
