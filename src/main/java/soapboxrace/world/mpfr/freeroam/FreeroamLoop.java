@@ -9,7 +9,7 @@ public class FreeroamLoop implements Runnable
 {
     public FreeroamLoop()
     {
-        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(this, 0, 100, TimeUnit.MILLISECONDS);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     @Override
