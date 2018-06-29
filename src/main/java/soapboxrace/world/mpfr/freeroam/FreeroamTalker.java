@@ -43,8 +43,6 @@ public class FreeroamTalker
     private Logger logger;
 
     private final FreeroamVisibleTalkers visibleTalkers;
-    
-    private final FreeroamPlayerUpdates playerUpdates;
 
     public FreeroamTalker(ChannelHandlerContext ctx, DatagramPacket packet)
     {
@@ -54,7 +52,6 @@ public class FreeroamTalker
         this.sender = new UdpSender(packet.sender(), ctx);
         this.cliTime = ByteBufUtil.getBytes(content, 52, 2);
         this.visibleTalkers = new FreeroamVisibleTalkers(this);
-        this.playerUpdates = new FreeroamPlayerUpdates(this);
     }
 
     /**
@@ -162,11 +159,6 @@ public class FreeroamTalker
         return ByteBuffer.allocate(2)
                 .putShort((short) countA++)
                 .array();
-    }
-
-    public FreeroamPlayerUpdates getPlayerUpdates()
-    {
-        return playerUpdates;
     }
 
     /**
@@ -316,8 +308,8 @@ public class FreeroamTalker
                     this.startBroadcaster();
                     logger.debug("Started buffer sender");
                     
-//                    this.startUpdater();
-//                    logger.debug("Started player updater");
+                    this.startUpdater();
+                    logger.debug("Started player updater");
                 }
             }
         } else
